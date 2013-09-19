@@ -20,4 +20,6 @@ Usage
 Upon first invocation, a new directory is created in the user's home directory
 called `.project` where each project will have its own file in the format of:
 
-	start_time:stop_time:description
+	start_time;stop_time;description
+
+Ongoing tasks will have -1 set for the stop_time and an empty string for the description.
