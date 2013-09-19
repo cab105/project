@@ -17,6 +17,9 @@ Usage
 	project.rb project_name status
 		# Dump all tasks associated with the project and sum the time
 
+	project.rb project_name abort
+		# Abort the currently active task
+
 Upon first invocation, a new directory is created in the user's home directory
 called `.project` where each project will have its own file in the format of:
 

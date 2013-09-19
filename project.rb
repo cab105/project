@@ -31,6 +31,7 @@ def printUsage
   puts "\t\trequire a message.\n"
   puts "\tstop - Stop the clock for the most recent entry.  This will\n"
   puts "\t\trequire a message.\n"
+  puts "\tabort - Stop the most recent activity and ignore it."
   puts "\tstatus - Dump a summary of the time spent on the project and\n"
   puts "\t\ta current running total of time spent on the project.\n\n"
   Kernel.exit(1)
@@ -69,6 +70,52 @@ def handleStart(directoryLocation, projectName)
     pe.startTask
     f.puts "#{pe}\n"
     f.close
+  end
+end
+
+def handleAbort(directoryLocation, projectName)
+  # Verify the project directory
+  unless File.directory?(directoryLocation)
+    puts "Directory #{directoryLocation} doesn't exist.  Exiting...\n"
+    Kernel.exit(3)
+  end
+
+  # Verify the project file
+  fileName = directoryLocation << '/' << projectName;
+  unless File.file?(fileName)
+    puts "Project #{projectName} doesn't exist.  Exiting...\n"
+    Kernel.exit(3)
+  end
+
+  # Open the file, build an array of entries, add in the end time, and write.
+  if File.file?(fileName)
+    f = File.new(fileName, "r+")
+    peArray = Array.new
+    while line = f.gets
+      pe = ProjectEntry.new
+      pe.import(line)
+      peArray.push(pe)
+    end
+    f.close
+    # Verify that the last element has an open task
+    unless peArray[-1].stopTime.instance_of?(String) and peArray[-1].stopTime.match("^-1$")
+      puts "There are no tasks open.\n"
+      Kernel.exit(3)
+    else
+      peArray[-1] = nil
+    end
+
+    f = File.new(fileName, "w")
+    peArray.each do |pe|
+      if pe.nil?
+        next
+      end
+      f.puts "#{pe}\n"
+    end
+    f.close
+  else
+    puts "The project: #{projectName} does not exist.  Create it first by starting a task\n"
+    Kernel.exit(3)
   end
 end
 
@@ -218,7 +265,7 @@ end
 
 # Verify the action
 if (((action <=> "start") != 0) and ((action <=> "stop") != 0) and
-  ((action <=> "status") != 0))
+  ((action <=> "status") != 0)) and ((action <=> "abort") != 0)
   puts "Invalid action: #{action}\n"
   printUsage
 end
@@ -236,4 +283,9 @@ end
 # Perform start actions
 if (action.match("start"))
   handleStart(dirLoc, projectName)
+end
+
+# Abort the current operation
+if (action.match("abort"))
+  handleAbort(dirLoc, projectName)
 end
