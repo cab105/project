@@ -51,6 +51,9 @@ def handleStart(directoryLocation, projectName)
     f = File.new(file, "r+")
     pe = ProjectEntry.new
     while line = f.gets
+      if line.start_with?("#")
+        next
+      end
       pe.import(line)
       if pe.stopTime.instance_of?(String) and pe.stopTime.match("^-1$")
         f.close
@@ -92,6 +95,9 @@ def handleAbort(directoryLocation, projectName)
     f = File.new(fileName, "r+")
     peArray = Array.new
     while line = f.gets
+      if line.start_with?("#")
+        next
+      end
       pe = ProjectEntry.new
       pe.import(line)
       peArray.push(pe)
@@ -144,6 +150,9 @@ def handleStop(directoryLocation, projectName, msg)
     f = File.new(fileName, "r+")
     peArray = Array.new
     while line = f.gets
+      if line.start_with?("#")
+        next
+      end
       pe = ProjectEntry.new
       pe.import(line)
       peArray.push(pe)
@@ -178,6 +187,9 @@ def handleStatus(directoryLocation, projectName)
   f = File.new(fileName, "r")
   peArray = Array.new
   while line = f.gets
+    if line.start_with?("#")
+      next
+    end
     pe = ProjectEntry.new
     pe.import(line)
     peArray.push(pe)
